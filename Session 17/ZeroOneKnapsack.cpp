@@ -53,4 +53,4 @@ public:
         }
         return prev[W];
     }
-};j
+};
