@@ -21,5 +21,5 @@ int superDigit(string n, int k) {
 
 
 // time complexity of helper = o(logn)
-// superDigit(n,k) = o(m)
+// time complexity of superDigit(n,k) = o(m)
 // m is length of n
