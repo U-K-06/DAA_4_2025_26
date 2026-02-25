@@ -2,48 +2,55 @@ class Solution {
 public:
     // --- 1. Top Down (Recursion + Memoization) ---
     // Time Complexity: O(N * W)
-    // Space Complexity: O(N * W) + O(N) auxiliary stack space
-    int solveTopDown(int i, int W, vector<int>& val, vector<int>& wt, vector<vector<int>>& dp) {
-        if (i < 0 || W == 0) return 0;
+    // Space Complexity: O(N * W) + O(N)
+    int solve(int i, int W, vector<int>& val, vector<int>& wt, vector<vector<int>>& dp) {
+        if (i < 0) return 0;
         if (dp[i][W] != -1) return dp[i][W];
 
-        int notPick = solveTopDown(i - 1, W, val, wt, dp);
+        int notPick = solve(i - 1, W, val, wt, dp);
         int pick = 0;
         if (wt[i] <= W) {
-            pick = val[i] + solveTopDown(i - 1, W - wt[i], val, wt, dp);
+            pick = val[i] + solve(i - 1, W - wt[i], val, wt, dp);
         }
         return dp[i][W] = max(pick, notPick);
     }
 
-    // --- 2. Bottom Up (Tabulation) ---
+    // --- 2. Bottom Up (2D Tabulation - Your current code) ---
     // Time Complexity: O(N * W)
     // Space Complexity: O(N * W)
-    int knapSackBottomUp(int W, vector<int>& val, vector<int>& wt) {
+    int knapSack2D(int W, vector<int>& val, vector<int>& wt) {
         int n = val.size();
         vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
         for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= W; j++) {
-                if (wt[i - 1] <= j) {
-                    dp[i][j] = max(val[i - 1] + dp[i - 1][j - wt[i - 1]], dp[i - 1][j]);
+            for (int w = 0; w <= W; w++) {
+                if (wt[i - 1] <= w) {
+                    dp[i][w] = max(dp[i - 1][w], val[i - 1] + dp[i - 1][w - wt[i - 1]]);
                 } else {
-                    dp[i][j] = dp[i - 1][j];
+                    dp[i][w] = dp[i - 1][w];
                 }
             }
         }
         return dp[n][W];
     }
 
-    // --- 3. Space Optimized (1D Array) ---
+    // --- 3. Bottom Up (1D Space Optimized - Your prev/current idea) ---
     // Time Complexity: O(N * W)
     // Space Complexity: O(W)
-    int knapSackOptimized(int W, vector<int>& val, vector<int>& wt) {
+    int knapSack1D(int W, vector<int>& val, vector<int>& wt) {
         int n = val.size();
-        vector<int> dp(W + 1, 0);
+        vector<int> prev(W + 1, 0);
+        
         for (int i = 0; i < n; i++) {
-            for (int j = W; j >= wt[i]; j--) {
-                dp[j] = max(dp[j], val[i] + dp[j - wt[i]]);
+            vector<int> current(W + 1, 0);
+            for (int w = 0; w <= W; w++) {
+                if (wt[i] <= w) {
+                    current[w] = max(prev[w], val[i] + prev[w - wt[i]]);
+                } else {
+                    current[w] = prev[w];
+                }
             }
+            prev = current; 
         }
-        return dp[W];
+        return prev[W];
     }
-};
+};j
